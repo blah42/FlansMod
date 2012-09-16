@@ -12,6 +12,7 @@ import co.uk.flansmods.common.CommonProxy;
 import co.uk.flansmods.common.CommonTickHandler;
 import co.uk.flansmods.common.EntityAAGun;
 import co.uk.flansmods.common.EntityBullet;
+import co.uk.flansmods.common.EntityDriveable;
 import co.uk.flansmods.common.EntityPassengerSeat;
 import co.uk.flansmods.common.EntityPlane;
 import co.uk.flansmods.common.EntityVehicle;
@@ -39,6 +40,8 @@ import net.minecraft.src.ModLoader;
 import net.minecraft.src.ModelBase;
 import net.minecraft.src.Vec3;
 import net.minecraft.src.World;
+import net.minecraft.src.WorldClient;
+import net.minecraft.src.WorldServer;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 public class ClientProxy extends CommonProxy
@@ -213,6 +216,28 @@ public class ClientProxy extends CommonProxy
 			}
 		}
 		FlansMod.log("Loaded gun box textures.");
+	}
+	
+	// CLIENT-SIDE
+	@Override
+	public void keyPress(int key, int entityID, EntityPlayer player)
+	{
+		WorldClient world = (WorldClient) FMLClientHandler.instance().getClient().theWorld;
+		Entity entityTest  = world.getEntityByID(entityID);
+		
+		if (entityTest == null || world.isRemote || !(entityTest instanceof EntityDriveable))
+			return;
+		
+		EntityDriveable entity = (EntityDriveable)entityTest;
+		
+		if (entity.riddenByEntity != player)
+			return;
+		
+		// if its not the inventory key, do whatever the entity wants.
+		if (key != 7)
+			entity.pressKey(key);
+		
+		FMLClientHandler.instance().displayGuiScreen(player, new GuiPlaneMenu((player).inventory, world, entity));
 	}
 
 	@Override

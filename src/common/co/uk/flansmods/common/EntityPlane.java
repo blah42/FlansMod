@@ -40,6 +40,131 @@ public class EntityPlane extends EntityDriveable implements IEntityAdditionalSpa
     {
         super(world);
     }
+    
+	public EntityPlane(World world, double x, double y, double z, EntityPlayer placer, PlaneType type1, PlaneData data1)
+	{
+		super(world, type1, data1);
+		setPosition(x, y, z);
+		rotateYaw(placer.rotationYaw);
+		data = data1;
+		try
+		{
+			dataID = Integer.parseInt(data.mapName.split("_")[1]);
+		}
+		catch(Exception e)
+		{
+			FlansMod.log("Failed to retrieve plane data ID from plane data. " + data.mapName);
+		}
+		type = type1;
+		System.out.println("FLANSMOD TEST >> Loaded plane entity with data: " + type.texture + " " + type.shortName + " " + type.health);
+		initType();
+	}
+	
+	protected void initType()
+	{
+		health = type.health;
+		rightWingHealth = leftWingHealth = tailHealth = health;
+		seats = new EntityPassengerSeat[type.numPassengers];
+		for(int i = 0; i < type.numPassengers; i++)
+		{
+			seats[i] = new EntityPassengerSeat(worldObj, this, i, type.seatsX[i], type.seatsY[i], type.seatsZ[i], type.gunner[i]);
+			worldObj.spawnEntityInWorld(seats[i]);
+		}
+		yOffset = type.yOffset;
+		propBlown = new boolean[type.numProps];
+		if(type.model == null)
+		{
+			FlansMod.logLoudly("NitroModelThingy not installed");
+			return;
+		}
+		
+		boxes = new EntityCollisionBox[type.boxes.length];
+		for(int i = 0; i < boxes.length; i++)
+		{
+			boxes[i] = type.boxes[i].makeEntity(this);
+		}
+	}
+	
+	@Override
+	public void writeSpawnData(ByteArrayDataOutput data) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void readSpawnData(ByteArrayDataInput data) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean attackEntityFromPart(EntityCollisionBox box,
+			DamageSource damagesource, int i) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+//	@Override
+//	public void pressKey(int key) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+
+	@Override
+	public void useGun(int gunID, EntityPlayer player, EntityPassengerSeat seat) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateCollisionBox(EntityCollisionBox box) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void readEntityFromNBT(NBTTagCompound var1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void writeEntityToNBT(NBTTagCompound var1) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public PlaneType type;
+	public PlaneData data;
+	
+	//Damage handling
+	public boolean[] propBlown;
+	public int tailHealth;
+	public int leftWingHealth;
+	public int rightWingHealth;
+	
+	//Weaponry
+	public int bombDelay;
+	public int gunDelay;
+	
+	public int soundPosition;
+	public float flapsYaw;
+	public float flapsPitchLeft;
+	public float flapsPitchRight;
+	public float propAngle;
+	public double propSpeed;
+	public boolean tailOnGround;
+	private boolean spawnedEntities;
+}
+
+// TODO: requires re-write
+/*
+public class EntityPlane extends EntityDriveable implements IEntityAdditionalSpawnData
+{
+    public EntityPlane(World world)
+    {
+        super(world);
+    }
 	
 	public EntityPlane(World world, double x, double y, double z, EntityPlayer placer, PlaneType type1, PlaneData data1)
 	{
@@ -226,7 +351,8 @@ public class EntityPlane extends EntityDriveable implements IEntityAdditionalSpa
         {
             return true;
         }
-		if(/*onGround &&*/ damagesource.damageType.equals("player") && ((EntityDamageSource)damagesource).getEntity().onGround)
+        // onground &&
+		if(damagesource.damageType.equals("player") && ((EntityDamageSource)damagesource).getEntity().onGround)
 		{
 			if(leftWingHealth > 0 && rightWingHealth > 0 && tailHealth > 0)
 			{
@@ -514,6 +640,10 @@ public class EntityPlane extends EntityDriveable implements IEntityAdditionalSpa
     public void onUpdate()
     {
         super.onUpdate();
+        
+        if (data == null)
+        	return;
+        
 		if(riddenByEntity != null && riddenByEntity instanceof EntityPlayer && FlansMod.controlMode == 1 && FMLClientHandler.instance().getClient().currentScreen == null)
 			ModLoader.openGUI((EntityPlayer)riddenByEntity, new GuiPlaneController(this));
 		
@@ -861,11 +991,13 @@ public class EntityPlane extends EntityDriveable implements IEntityAdditionalSpa
 				if(!worldObj.loadedEntityList.contains(seats[i]))
 					worldObj.spawnEntityInWorld(seats[i]);
 			}
-			for(int i = 0; i < boxes.length; i++)
-			{
-				if(!worldObj.loadedEntityList.contains(boxes[i]))
-					worldObj.spawnEntityInWorld(boxes[i]);
-			}
+			
+			if (boxes != null)
+				for(int i = 0; i < boxes.length; i++)
+				{
+					if(!worldObj.loadedEntityList.contains(boxes[i]))
+						worldObj.spawnEntityInWorld(boxes[i]);
+				}
 			spawnedEntities = true;
 		}
     }
@@ -1188,3 +1320,4 @@ public class EntityPlane extends EntityDriveable implements IEntityAdditionalSpa
 	public boolean tailOnGround;
 	private boolean spawnedEntities;
 }
+*/

@@ -81,6 +81,7 @@ public abstract class EntityDriveable extends Entity
 	public void onCollideWithPlayer(EntityPlayer par1EntityPlayer) 
 	{
 		//Do nothing. Like a boss.
+		// TODO: perhaps send the player flying??
 	}
 
     public boolean canBeCollidedWith()
@@ -88,15 +89,8 @@ public abstract class EntityDriveable extends Entity
         return !isDead;
     }
 
-    public void setPositionAndRotation2(double d, double d1, double d2, float f, 
-            float f1, int i)
+    public void setPositionAndRotation2(double d, double d1, double d2, float f, float f1, int i)
     {
-        boatX = d;
-        boatY = d1;
-        boatZ = d2;
-        boatYaw = f;
-        boatPitch = f1;
-        boatPosRotationIncrements = i + 4;
         motionX = velocityX;
         motionY = velocityY;
         motionZ = velocityZ;
@@ -109,6 +103,7 @@ public abstract class EntityDriveable extends Entity
         velocityZ = motionZ = d2;
     }
 	
+    // TODO: gotta do this stuff elsewhere.
 	public abstract void pressKey(int key);
 
     public void onUpdate()
@@ -242,12 +237,6 @@ public abstract class EntityDriveable extends Entity
 	
 	public abstract void updateCollisionBox(EntityCollisionBox box);
 	
-    private int boatPosRotationIncrements;
-    private double boatX;
-    private double boatY;
-    private double boatZ;
-    private double boatYaw;
-    private double boatPitch;
     private double velocityX;
     private double velocityY;
     private double velocityZ;
@@ -267,6 +256,4 @@ public abstract class EntityDriveable extends Entity
 	
 	public EntityPassengerSeat[] seats;
 	public EntityCollisionBox[] boxes;
-	
-	public static Minecraft mc = FMLClientHandler.instance().getClient();
 }

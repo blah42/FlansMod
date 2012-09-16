@@ -31,6 +31,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -88,6 +89,8 @@ public class FlansModClient extends FlansMod
 
 	public static void tick()
 	{
+		if (minecraft.thePlayer == null)
+			return;
 		// Guns
 		if (shootTime > 0)
 			shootTime--;
@@ -126,7 +129,7 @@ public class FlansModClient extends FlansMod
 		{
 			try
 			{
-				ModLoader.setPrivateValue(EntityRenderer.class, minecraft.entityRenderer, field, playerZoom);
+				ObfuscationReflectionHelper.setPrivateValue(EntityRenderer.class, minecraft.entityRenderer, playerZoom, "cameraZoom", "V");
 			} catch (Exception e)
 			{
 				log("I forgot to update obfuscated reflection D:");

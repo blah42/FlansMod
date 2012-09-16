@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import co.uk.flansmods.client.GuiPlaneMenu;
+
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.ITickHandler;
 
 import net.minecraft.src.*;
@@ -89,6 +92,28 @@ public class CommonProxy
 	{
 	}
 	
-	public void spawnVehicle(World world, double posX, double posY, double posZ, VehicleType type, VehicleData data, EntityPassengerSeat seat, EntityVehicle entity, RotatedAxes axes, EntityPlayer player) {
+	public void spawnVehicle(World world, double posX, double posY, double posZ, VehicleType type, VehicleData data, EntityPassengerSeat seat, EntityVehicle entity, RotatedAxes axes, EntityPlayer player)
+	{
+	}
+
+	// SERVER-SIDE
+	public void keyPress(int key, int entityID, EntityPlayer player)
+	{
+		WorldServer world = (WorldServer) player.worldObj;
+		Entity entityTest  = world.getEntityByID(entityID);
+		
+		if (entityTest == null || world.isRemote || !(entityTest instanceof EntityDriveable))
+			return;
+		
+		EntityDriveable entity = (EntityDriveable)entityTest;
+		
+		if (entity.riddenByEntity != player)
+			return;
+		
+		// if its not the inventory key, do whatever the entity wants.
+		if (key != 7)
+			entity.pressKey(key);
+		
+		// #7 is openning the gui, and is done ClientSide
 	}
 }
